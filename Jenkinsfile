@@ -42,6 +42,10 @@ node {
         }
     }
 
+    stage('snyk') {
+	snykSecurity(tokenCredentialId: 'SNYK_TOKEN', failOnBuild: true, monitor: true) 
+    }
+
     stage('packaging') {
         sh "./mvnw verify -Pprod -DskipTests"
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
