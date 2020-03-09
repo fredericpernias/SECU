@@ -22,6 +22,10 @@ node {
         sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm"
     }
 
+   stage('snyk'){
+	snykSecurity(tokenCredentialId: 'SNYK_TOKEN', failOnBuild: true, monitor: true) 
+    }
+
     stage('backend tests') {
         try {
             sh "./mvnw verify"
@@ -42,9 +46,6 @@ node {
         }
     }
 
-    stage('snyk') {
-	snykSecurity(tokenCredentialId: 'SNYK_TOKEN', failOnBuild: true, monitor: true) 
-    }
 
     stage('packaging') {
         sh "./mvnw verify -Pprod -DskipTests"
