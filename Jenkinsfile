@@ -23,7 +23,7 @@ node {
     }
 
    stage('snyk'){
-	snykSecurity(tokenCredentialId: 'SNYK_TOKEN', failOnBuild: true, monitor: true) 
+	snykSecurity severity: 'medium', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
     }
 
     stage('backend tests') {
