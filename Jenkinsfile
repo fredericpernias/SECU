@@ -26,12 +26,12 @@ node {
 	snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
     }
 
-    stage('quality analysis') {
+/*    stage('quality analysis') {
         withSonarQubeEnv('sonarcloud') {
             sh "./mvnw initialize sonar:sonar"
         }
     }
-
+*/
     stage('Run Tests') {
             parallel {     
    stage('backend tests') {
