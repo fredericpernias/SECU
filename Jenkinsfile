@@ -31,8 +31,10 @@ node {
             sh "./mvnw initialize sonar:sonar"
         }
     }
-     
-//   stage('backend tests') {
+
+    stage('Run Tests') {
+            parallel {     
+   stage('backend tests') {
 //        try {
 //            sh "./mvnw verify"
 //        } catch(err) {
@@ -40,9 +42,9 @@ node {
 //        } finally {
 //            junit '**/target/test-results/**/TEST-*.xml'
 //        }
-//    }
+    }
 
-//    stage('frontend tests') {
+    stage('frontend tests') {
 //        try {
 //            sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
 //        } catch(err) {
@@ -50,8 +52,9 @@ node {
 //        } finally {
 //            junit '**/target/test-results/TESTS-*.xml'
 //        }
-//    }
-//
+    }
+   }
+   }
 
     stage('package and deploy') {
         sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
