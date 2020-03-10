@@ -26,32 +26,32 @@ node {
 	snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
     }
 
-/*    stage('quality analysis') {
+    stage('quality analysis') {
         withSonarQubeEnv('sonarcloud') {
             sh "./mvnw initialize sonar:sonar"
         }
     }
-*/
+    
     stage('Run Tests') {
             parallel {     
    stage('backend tests') {
-//        try {
-//            sh "./mvnw verify"
-//        } catch(err) {
-//            throw err
-//        } finally {
-//            junit '**/target/test-results/**/TEST-*.xml'
-//        }
+        try {
+            sh "./mvnw verify"
+        } catch(err) {
+            throw err
+        } finally {
+            junit '**/target/test-results/**/TEST-*.xml'
+        }
     }
 
     stage('frontend tests') {
-//        try {
-//            sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
-//        } catch(err) {
-//            throw err
-//        } finally {
-//            junit '**/target/test-results/TESTS-*.xml'
-//        }
+        try {
+            sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
+        } catch(err) {
+            throw err
+        } finally {
+            junit '**/target/test-results/TESTS-*.xml'
+        }
     }
    }
    }
