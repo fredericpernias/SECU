@@ -27,7 +27,7 @@ node {
     }
 
     stage('quality analysis') {
-        withSonarQubeEnv('https://sonarcloud.io/') {
+        withSonarQubeEnv('sonarcloud') {
             sh "./mvnw initialize sonar:sonar"
         }
     }
