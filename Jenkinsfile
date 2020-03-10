@@ -26,6 +26,12 @@ node {
 	snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
     }
 
+    stage('quality analysis') {
+        withSonarQubeEnv('https://sonarcloud.io/') {
+            sh "./mvnw initialize sonar:sonar"
+        }
+    }
+/*
     stage('backend tests') {
         try {
             sh "./mvnw verify"
@@ -45,15 +51,11 @@ node {
             junit '**/target/test-results/TESTS-*.xml'
         }
     }
+*/
 
-
-    stage('packaging') {
-        sh "./mvnw verify -Pprod -DskipTests"
+    stage('package and deploy') {
+        sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
     }
-    stage('quality analysis') {
-        withSonarQubeEnv('https://sonarcloud.io/') {
-            sh "./mvnw initialize sonar:sonar"
-        }
-    }
+
 }
