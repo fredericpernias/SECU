@@ -1,4 +1,6 @@
 #!/usr/bin/env groovy
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+
 pipeline {
 agent any
 stages {
