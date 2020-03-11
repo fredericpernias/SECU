@@ -1,30 +1,38 @@
 #!/usr/bin/env groovy
 pipeline {
+agent any
 stages {
     stage('checkout') {
-        checkout scm
+       steps {
+                 checkout scm
+	}
     }
 
     stage('check java') {
-        sh "java -version"
-    }
+        steps {
+                sh "java -version"
+    }}
 
     stage('clean') {
-        sh "chmod +x mvnw"
+      steps {
+                  sh "chmod +x mvnw"
         sh "./mvnw clean"
-    }
+    }}
 
     stage('install tools') {
-        sh "./mvnw com.github.eirslett:frontend-maven-plugin:install-node-and-npm -DnodeVersion=v10.16.1 -DnpmVersion=6.9.2"
-    }
+        steps {
+                sh "./mvnw com.github.eirslett:frontend-maven-plugin:install-node-and-npm -DnodeVersion=v10.16.1 -DnpmVersion=6.9.2"
+    }}
 
     stage('npm install') {
-        sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm"
-    }
+        steps {
+                sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm"
+    }}
 
    stage('snyk'){
-	snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
-    }
+	steps {
+                snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
+    }}
 
 //    stage('quality analysis') {
 //        withSonarQubeEnv('sonarcloud') {
