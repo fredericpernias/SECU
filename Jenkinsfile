@@ -35,23 +35,25 @@ node {
     stage('Run Tests') {
             parallel {     
    stage('backend tests') {
-        try {
+       step {
+	 try {
             sh "./mvnw verify"
         } catch(err) {
             throw err
         } finally {
             junit '**/target/test-results/**/TEST-*.xml'
-        }
+        }}
     }
 
     stage('frontend tests') {
-        try {
+       step { 
+	 try {
             sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
         } catch(err) {
             throw err
         } finally {
             junit '**/target/test-results/TESTS-*.xml'
-        }
+        }}
     }
    }
    }
