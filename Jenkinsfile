@@ -33,7 +33,7 @@ node {
 //    }
     
     stage('Run Tests') {
-            parallel {     
+            parallel (     
    'backend tests': {
 	 try {
             sh "./mvnw verify"
@@ -42,9 +42,9 @@ node {
         } finally {
             junit '**/target/test-results/**/TEST-*.xml'
         }
-    }
+    },
 
-    'frontend tests') : {
+    'frontend tests' : {
 	 try {
             sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
         } catch(err) {
@@ -52,7 +52,7 @@ node {
         } finally {
             junit '**/target/test-results/TESTS-*.xml'
         }}
-   }
+   )
    }
 
 //    stage('package and deploy') {
