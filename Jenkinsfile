@@ -1,46 +1,58 @@
 #!/usr/bin/env groovy
 
 node {
-	stage('checkout') {
-		checkout scm
-	}
+    stage('checkout') {
+        checkout scm
+    }
 
-	stage('check java') {
-		sh "java -version"
-	}
+    docker.image('jhipster/jhipster:v6.2.0').inside('-u jhipster -e MAVEN_OPTS="-Duser.home=./"') {
+        stage('check java') {
+            sh "java -version"
+        }
 
-	stage('clean') {
-		sh "chmod +x mvnw"
-			sh "./mvnw clean"
-	}
+        stage('clean') {
+            sh "chmod +x mvnw"
+            sh "./mvnw clean"
+        }
 
-	stage('install tools') {
-		sh "./mvnw com.github.eirslett:frontend-maven-plugin:install-node-and-npm -DnodeVersion=v10.16.1 -DnpmVersion=6.9.2"
-	}
+        stage('install tools') {
+            sh "./mvnw com.github.eirslett:frontend-maven-plugin:install-node-and-npm -DnodeVersion=v10.16.1 -DnpmVersion=6.9.2"
+        }
 
-	stage('npm install') {
-		sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm"
-	}
+        stage('npm install') {
+            sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm"
+        }
 
-	stage('snyk'){
-		snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
-	}
+        stage('backend tests') {
+            try {
+                sh "./mvnw verify"
+            } catch(err) {
+                throw err
+            } finally {
+                junit '**/target/test-results/**/TEST-*.xml'
+            }
+        }
 
+        stage('frontend tests') {
+            try {
+                sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
+            } catch(err) {
+                throw err
+            } finally {
+                junit '**/target/test-results/TESTS-*.xml'
+            }
+        }
 
-	//    stage('package and deploy') {
-	//        sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
-	//        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-	//    }
-	stage('Setup zap') {
-		startZap(host: "127.0.0.1", port: 9091, timeout:500, zapHome: "", sessionPath:"/session.session", allowedHosts:['github.com']) 
-	}
-	stage('Build & Test zap') {
-		sh "mvn verify -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=9091 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=9091" 
-	}
+        stage('packaging') {
+            sh "./mvnw verify -Pprod -DskipTests"
+            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+        }
+    }
 
-}
-post {
-	always {
-		archiveZap(failAllAlerts: 1, failHighAlerts: 0, failMediumAlerts: 0, failLowAlerts: 0, falsePositivesFilePath: "zapFalsePositives.json")
-	}
+    def dockerImage
+    stage('publish docker') {
+        // A pre-requisite to this step is to setup authentication to the docker registry
+        // https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#authentication-methods
+        sh "./mvnw jib:build"
+    }
 }
