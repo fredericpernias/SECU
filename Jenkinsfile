@@ -34,7 +34,7 @@ node {
     
     stage('Run Tests') {
             parallel {     
-   stage('backend tests') {
+   'backend tests': {
 	 try {
             sh "./mvnw verify"
         } catch(err) {
@@ -44,7 +44,7 @@ node {
         }
     }
 
-    stage('frontend tests') {
+    'frontend tests') : {
 	 try {
             sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
         } catch(err) {
