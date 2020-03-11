@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
-
-node {
+pipeline {
+stages {
     stage('checkout') {
         checkout scm
     }
@@ -32,31 +32,6 @@ node {
 //        }
 //    }
     
-    stage('Run Tests') {
-            parallel {     
-   stage('backend tests') {
-       step {
-	 try {
-            sh "./mvnw verify"
-        } catch(err) {
-            throw err
-        } finally {
-            junit '**/target/test-results/**/TEST-*.xml'
-        }}
-    }
-
-    stage('frontend tests') {
-       step { 
-	 try {
-            sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test'"
-        } catch(err) {
-            throw err
-        } finally {
-            junit '**/target/test-results/TESTS-*.xml'
-        }}
-    }
-   }
-   }
 
 //    stage('package and deploy') {
 //        sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
@@ -84,4 +59,4 @@ post {
                 archiveZap(failAllAlerts: 1, failHighAlerts: 0, failMediumAlerts: 0, failLowAlerts: 0, falsePositivesFilePath: "zapFalsePositives.json")
             }
         }
-    }
+    } }
