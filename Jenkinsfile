@@ -27,20 +27,37 @@ node {
 	}
 
 
-	//    stage('package and deploy') {
-	//        sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
-	//        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-	//    }
+	stage('package and deploy') {
+	    sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
+	        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+	 }
+	
 	stage('Setup zap') {
-		startZap(host: "127.0.0.1", port: 9091, timeout:500, zapHome: ".", sessionPath:"/session.session", allowedHosts:['github.com']) 
+		startZap(host: "127.0.0.1", port: 9091, timeout:500, zapHome: "/Applications/OWASP ZAP.app/Contents/Java/", sessionPath:"/Users/fred/session.session", allowedHosts:['https://secuzapsnik.herokuapp.com/']) 
 	}
-	stage('Build & Test zap') {
-		sh "mvn verify -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=9091 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=9091" 
-	}
+	
+    stage('backend tests') {
+        try {
+              sh "./mvnw verify  -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=9091 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=9091"
+          } catch(err) {
+              throw err
+          } finally {
+              junit '**/target/test-results/**/TEST-*.xml'
+          }
+      }
+ 
+      stage('frontend tests') {
+          try {
+              sh "./mvnw com.github.eirslett:frontend-maven-plugin:npm -Dfrontend.npm.arguments='run test' -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=9091 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=9091"
+          } catch(err) {
+              throw err
+          } finally {
+              junit '**/target/test-results/TESTS-*.xml'
+          }
+      }
 
-}
-post {
-	always {
+	stage('close zap') {
 		archiveZap(failAllAlerts: 1, failHighAlerts: 0, failMediumAlerts: 0, failLowAlerts: 0, falsePositivesFilePath: "zapFalsePositives.json")
 	}
+
 }
