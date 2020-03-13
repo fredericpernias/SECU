@@ -23,7 +23,7 @@ node {
 	}
 
 	stage('snyk'){
-		snykSecurity severity: 'high', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
+		snykSecurity severity: 'low', snykInstallation: 'snykInt', snykTokenId: 'SNYK_TOKEN'
 	}
 
 
