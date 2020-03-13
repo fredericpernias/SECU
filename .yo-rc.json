@@ -33,6 +33,8 @@
     "dtoSuffix": "DTO",
     "otherModules": [],
     "enableTranslation": false,
-    "blueprints": []
+    "blueprints": [],
+    "herokuAppName": "still-eyrie-46870",
+    "herokuDeployType": "jar"
   }
 }

@@ -28,7 +28,7 @@ node {
 
 
 	stage('package and deploy') {
-	    sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=secuzapsnik"
+	    sh "./mvnw com.heroku.sdk:heroku-maven-plugin:2.0.5:deploy -DskipTests -Pprod -Dheroku.buildpacks=heroku/jvm -Dheroku.appName=still-eyrie-46870"
 	        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
 	 }
 	
