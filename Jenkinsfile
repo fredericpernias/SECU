@@ -33,7 +33,7 @@ node {
 	 }
 	
 	stage('Setup zap') {
-		startZap(host: "127.0.0.1", port: 9091, timeout:500, zapHome: "/Applications/OWASP ZAP.app/Contents/Java/", sessionPath:"/Users/fred/session.session", allowedHosts:['https://secuzapsnik.herokuapp.com/']) 
+		startZap(host: "127.0.0.1", port: 9091, timeout:500, zapHome: "/Applications/OWASP ZAP.app/Contents/Java/", sessionPath:"/Users/fred/session.session", allowedHosts:["https://still-eyrie-46870.herokuapp.com/"]) 
 	}
 	
     stage('backend tests') {
